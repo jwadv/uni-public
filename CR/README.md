@@ -1,8 +1,8 @@
-# 🔐 Crittografia e Sicurezza dei Dati
+# Crittografia
 
 Raccolta di materiale,esercizi, script e notebook sviluppati per il corso di Crittografia.
 
-## 📂 Contenuti della cartella
+## Contenuti della cartella
 
 ### 1. Generatore di Geffe e Attacco di Correlazione
 * **Notebook:** `geffe_generator.ipynb`
