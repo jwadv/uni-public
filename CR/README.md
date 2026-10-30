@@ -13,5 +13,5 @@ Raccolta di materiale,esercizi, script e notebook sviluppati per il corso di Cri
 
 ---
 
-## 🚀 Come utilizzare i materiali
+## Come utilizzare i materiali
 Puoi aprire il notebook direttamente su Google Colab cliccando sul file `.ipynb` oppure eseguirlo in locale clonando il repository.
