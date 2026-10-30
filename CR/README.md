@@ -13,7 +13,7 @@ Raccolta di materiali, esercizi, script e notebook sviluppati per il corso di Cr
 
 * **File disponibili:**
   * `geffe_generator.ipynb`: Notebook interattivo per l'esplorazione teorica e la simulazione passo-passo.
-  * `geffe_generator.py`: Script Python standalone, ideale per l'esecuzione diretta da riga di comando senza la necessità di Jupyter o Google Colab.
+  * `geffe_generator.py`: Script Python standalone contenente **esclusivamente** il codice per l'implementazione e la simulazione dell'attacco, ideale per l'esecuzione diretta da riga di comando senza la necessità di Jupyter o Google Colab.
 
 ---
 
