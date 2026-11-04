@@ -22,7 +22,18 @@ def geffe(s1, s2, s3, lenght):
     z3 = lfsr(s3, t3, lenght)
     return [(z1[i] & z2[i]) ^ ((1 - z1[i]) & z3[i]) for i in range(lenght)]
 
-def encrypt(msg: str, s1, s2, s3):
+def encrypt(plaintext: str, s1, s2, s3):
+    p_bytes = [] #devo convertire il testo in byte, quindi in bit
+    for c in plaintext:
+        if ord(c) > 255:
+            raise ValueError("Il testo contiene caratteri non supportati (servono caratteri con codice <= 255)")
+        p_bytes.append(ord(c))
+
+    num_bits = len(p_bytes) * 8 #quanti bit servono
+    k_stream = geffe(s1, s2, s3, num_bits)
+    ciphertext = [p_bytes[i] ^ k_stream[i] for i in range(len(p_bytes))]
+
+    #
 
 
-
+def decrypt(ciphertext: str, s1, s2, s3):
