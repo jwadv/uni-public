@@ -108,9 +108,36 @@ def decrypt(c_text: str, s1, s2, s3):
         plaintext += chr(int(byte, 2))
     return plaintext
         
+# ATTACCO: funzioni
+def find_register(taps, k_noto):
+    """Prova tutti gli stati di UN registro (LFSR2 o LFSR3)"""
+
 # ATTACCO
 
- # def attack(c_hex)
+def attack(c_hex, known_text):
+    c_noto = hex_to_bits(c_hex)
+    p_noto = text_to_bits(known_text)
+    num_bit_noti = len(p_noto)
+
+    # 1) Ricavare il pezzo di keystream noto
+    k_noto = [c_noto[i] ^ p_noto[i] for i in range(num_bit_noti)]
+
+    print()
+    print(SEP)
+    print("KEYSTREAM NOTO = chiaro noto XOR cifrato (solo sui primi", n, "bit)")
+    print(SEP)
+    print("   chiaro noto:", bits_to_str(p_noto))
+    print("   cifrato:    ", bits_to_str(c_noto[:num_bit_noti]))
+    print("   keystream:  ", bits_to_str(k_noto))
+
+    # 2) Recuperare i 3 semi iniziali dei registri (s1, s2, s3) tramite correlazione:
+    #    Data la forte correlazione tra l'output di Geffe con z2 e z3 (75%)
+    #    si procede indovinando LFSR2 e LFSR3 e verificando se il risultato coincide con il keystream noto.
+    print()
+    print(SEP)
+    print("2) RECUPERO DEI SEMI")
+    print(SEP)
+
 
 
 # MENU
