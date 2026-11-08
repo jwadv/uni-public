@@ -27,16 +27,27 @@ def ask_seeds():
     Controlla lunghezza, che ci siano solo 0 e 1 e che non siano tutti zero.
     Ritorna (s1, s2, s3)."""
     seeds = []
-    for nome, default in [("LFSR1", s1), ("LFSR2", s2), ("LFSR3", s3)]:
-        testo = input(f"{nome} ({len(default)} bit) [Default: {bits_to_str(default)}]: ").strip()
-        if testo == "":
-            seeds.append(default)
-        else:
-            if len(testo) != len(default) or testo.strip("01") != "":
-                raise ValueError(f"servono {len(default)} cifre, solo 0 e 1")
-            if "1" not in testo:
-                raise ValueError("lo stato non può essere tutto zero")
-            seeds.append([int(b) for b in testo])
+    for registro, default in [("LFSR1", s1), ("LFSR2", s2), ("LFSR3", s3)]:
+        while True:
+            stato = input(
+                f"{registro} ({len(default)} bit) "
+                f"[Default: {bits_to_str(default)}]: "
+            ).strip()
+            if stato == "":
+                seeds.append(default)
+                break
+
+            try:
+                if len(stato) != len(default) or stato.strip("01") != "":
+                    raise ValueError(f"servono {len(default)} cifre, solo 0 e 1")
+                if "1" not in stato:
+                    raise ValueError("lo stato non può essere tutto zero")
+            except ValueError as errore:
+                print(errore)
+                continue
+
+            seeds.append([int(b) for b in stato])
+            break
     return seeds[0], seeds[1], seeds[2]
 
 # GENERATORE DI GEFFE
@@ -84,15 +95,15 @@ def decrypt(c_text: str, s1, s2, s3):
     p_bytes = [c_bytes[i] ^ k_stream[i] for i in range(len(c_bytes))]
 
     # da bit a stringa
-    messaggio = ""
+    plaintext = ""
     for i in range(0, len(p_bytes), 8):
         byte = bits_to_str(p_bytes[i:i + 8])
-        messaggio += chr(int(byte, 2))
-    return messaggio
+        plaintext += chr(int(byte, 2))
+    return plaintext
         
 # ATTACCO
 
- def attack(c_hex)
+ # def attack(c_hex)
 
 
 # MENU
@@ -115,6 +126,21 @@ print()
 # stati iniziali (servono per cifratura e decifratura)
 if scelta in ["1", "2"]:
     print(SEP)
-    print("STATI INIZIALI DEI 3 REGISTRI (Invio = default)")
+    print("DEFINIZIONE DEGLI STATI INIZIALI DEI 3 REGISTRI (Invio = default)")
     print(SEP)
     s1, s2, s3 = ask_seeds()
+
+
+if scelta == "1":
+    print()
+    print(SEP)
+    print("CIFRATURA")
+    print(SEP)
+    messaggio = input("Messaggio da cifrare [Default: Corso di crittografia 2026/2027]: ").strip()
+    if messaggio == "":
+        messaggio = "Corso di crittografia 2026/2027"
+
+    print()
+    print(SEP)
+    print("Testo cifrato (hex):", encrypt(messaggio, s1, s2, s3))
+    print(SEP)
