@@ -13,6 +13,18 @@ s3 = [1, 0, 1, 1, 0, 1]
 SEP = "-" * 60
 
 # FUNZIONI DI SUPPORTO
+def text_to_bits(text):
+    """Ogni carattere diventa 8 bit: 'A' -> [0,1,0,0,0,0,0,1].
+    Con un codice > 255 i bit sarebbero più di 8 e tutto si sfaserebbe,
+    quindi in quel caso si ferma con un errore."""
+    bits = []
+    for ch in text:
+        if ord(ch) > 255:
+            raise ValueError(f"carattere non supportato: '{ch}' (servono caratteri con codice <= 255)")
+        for b in format(ord(ch), "08b"):
+            bits.append(int(b))
+    return bits
+
 
 def hex_to_bits(hex):
     """Ogni cifra esadecimale diventa 4 bit, tenendo gli zeri iniziali."""
@@ -73,15 +85,10 @@ def geffe(s1, s2, s3, lenght):
 # CIFRATURA E DECIFRATURA
 
 def encrypt(p_text, s1, s2, s3):
-    p_bytes = [] #devo convertire il testo in byte, quindi in bit
-    for c in p_text:
-        if ord(c) > 255:
-            raise ValueError("Il testo contiene caratteri non supportati (servono caratteri con codice <= 255)")
-        p_bytes.append(ord(c))
+    p_bits = text_to_bits(p_text)
 
-    num_bits = len(p_bytes) * 8 #quanti bit servono
-    k_stream = geffe(s1, s2, s3, num_bits)
-    c_text = [p_bytes[i] ^ k_stream[i] for i in range(len(p_bytes))] #cifrato in binario
+    k_stream = geffe(s1, s2, s3, len(p_bits))
+    c_text = [p_bits[i] ^ k_stream[i] for i in range(len(p_bits))] #cifrato in binario
 
     c_int = int(bits_to_str(c_text), 2) #cifrato intero base 2
     c_hex = format(c_int, "0" + str(len(c_text) // 4) + "x")
