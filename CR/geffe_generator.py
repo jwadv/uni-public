@@ -10,6 +10,7 @@ s1 = [1, 0, 1, 1]
 s2 = [1, 0, 0, 1, 0]
 s3 = [1, 0, 1, 1, 0, 1]
 
+# GENERAORE DI GEFFE
 
 def lfsr(state, taps, length):
     current_state = list(state)
@@ -28,6 +29,9 @@ def geffe(s1, s2, s3, lenght):
     z3 = lfsr(s3, t3, lenght)
     return [(z1[i] & z2[i]) ^ ((1 - z1[i]) & z3[i]) for i in range(lenght)]
 
+
+# CIFRATURA E DECIFRATURA
+
 def encrypt(p_text: str, s1, s2, s3):
     p_bytes = [] #devo convertire il testo in byte, quindi in bit
     for c in p_text:
@@ -37,14 +41,16 @@ def encrypt(p_text: str, s1, s2, s3):
 
     num_bits = len(p_bytes) * 8 #quanti bit servono
     k_stream = geffe(s1, s2, s3, num_bits)
-    c_text = [p_bytes[i] ^ k_stream[i] for i in range(len(p_bytes))] #in esadecimale
+    c_text = [p_bytes[i] ^ k_stream[i] for i in range(len(p_bytes))] #cifrato in binario
 
-    #
+    c_int = int("".join(str(b) for b in c_text), 2) #cifrato intero base 2
+    c_hex = format(c_int, "0" + str(len(c_text) // 4) + "x")
+    return c_hex
 
 
 def decrypt(c_text: str, s1, s2, s3):
     c_int = int(c_text, 16)
-    c_bytes = [int(b) for b in format(c_int, '0' + str(len(c_text) * 4) + 'b')] #da esadecimale a binario
+    c_bytes = [int(b) for b in format(c_int, '0' + str(len(c_text) * 4) + 'b')] #cifrato in binario
 
     k_stream = geffe(s1, s2, s3, len(c_bytes))
     p_bytes = [c_bytes[i] ^ k_stream[i] for i in range(len(c_bytes))]
@@ -56,4 +62,6 @@ def decrypt(c_text: str, s1, s2, s3):
         messaggio += chr(int(byte, 2))
     return messaggio
         
+# ATTACCO
 
+# MENU
