@@ -144,3 +144,24 @@ if scelta == "1":
     print(SEP)
     print("Testo cifrato (hex):", encrypt(messaggio, s1, s2, s3))
     print(SEP)
+
+if scelta == "2":
+    print()
+    print(SEP)
+    print("DECIFRATURA")
+    print(SEP)
+    cifrato_hex = input("Testo cifrato (hex): ").strip()
+
+    if not cifrato_hex:
+        raise ValueError("Il testo cifrato non può essere vuoto")
+
+    if any(c not in "0123456789abcdefABCDEF" for c in cifrato_hex):
+        raise ValueError("Sono ammesse solo cifre esadecimali: 0-9, A-F")
+
+    if len(cifrato_hex) % 2 != 0:
+        raise ValueError("Il numero di cifre esadecimali deve essere pari")
+
+    print()
+    print(SEP)
+    print("Testo decifrato:", decrypt(cifrato_hex, s1, s2, s3))
+    print(SEP)
