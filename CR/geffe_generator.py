@@ -5,6 +5,12 @@ t2 = [0,2]
 t3 = [0,1]
 # per semplicità li ho fissati... (da modificare in un secondo momento)
 
+# stati iniziali di default
+s1 = [1, 0, 1, 1]
+s2 = [1, 0, 0, 1, 0]
+s3 = [1, 0, 1, 1, 0, 1]
+
+
 def lfsr(state, taps, length):
     current_state = list(state)
     sequence = []
@@ -22,18 +28,32 @@ def geffe(s1, s2, s3, lenght):
     z3 = lfsr(s3, t3, lenght)
     return [(z1[i] & z2[i]) ^ ((1 - z1[i]) & z3[i]) for i in range(lenght)]
 
-def encrypt(plaintext: str, s1, s2, s3):
+def encrypt(p_text: str, s1, s2, s3):
     p_bytes = [] #devo convertire il testo in byte, quindi in bit
-    for c in plaintext:
+    for c in p_text:
         if ord(c) > 255:
             raise ValueError("Il testo contiene caratteri non supportati (servono caratteri con codice <= 255)")
         p_bytes.append(ord(c))
 
     num_bits = len(p_bytes) * 8 #quanti bit servono
     k_stream = geffe(s1, s2, s3, num_bits)
-    ciphertext = [p_bytes[i] ^ k_stream[i] for i in range(len(p_bytes))]
+    c_text = [p_bytes[i] ^ k_stream[i] for i in range(len(p_bytes))] #in esadecimale
 
     #
 
 
-def decrypt(ciphertext: str, s1, s2, s3):
+def decrypt(c_text: str, s1, s2, s3):
+    c_int = int(c_text, 16)
+    c_bytes = [int(b) for b in format(c_int, '0' + str(len(c_text) * 4) + 'b')] #da esadecimale a binario
+
+    k_stream = geffe(s1, s2, s3, len(c_bytes))
+    p_bytes = [c_bytes[i] ^ k_stream[i] for i in range(len(c_bytes))]
+
+    # da bit a stringa
+    messaggio = ""
+    for i in range(0, len(p_bytes), 8):
+        byte = "".join(str(b) for b in p_bytes[i:i + 8])
+        messaggio += chr(int(byte, 2))
+    return messaggio
+        
+
