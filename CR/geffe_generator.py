@@ -13,6 +13,7 @@ s3 = [1, 0, 1, 1, 0, 1]
 SEP = "-" * 60
 
 # FUNZIONI DI SUPPORTO
+
 def text_to_bits(text):
     """Ogni carattere diventa 8 bit: 'A' -> [0,1,0,0,0,0,0,1].
     Con un codice > 255 i bit sarebbero più di 8 e tutto si sfaserebbe,
@@ -109,8 +110,33 @@ def decrypt(c_text: str, s1, s2, s3):
     return plaintext
         
 # ATTACCO: funzioni
-def find_register(taps, k_noto):
-    """Prova tutti gli stati di UN registro (LFSR2 o LFSR3)"""
+
+def all_states(numero_bit):
+    """Tutti gli stati possibili di un registro, escluso quello tutto zero """
+    stati = []
+    for num in range(1, 2 ** numero_bit):
+        stati.append([int(b) for b in format(num, "0" + str(numero_bit) + "b")]) 
+    return stati
+
+def find_initial_state(taps, numero_bit, k_noto):
+    """Prova tutti i possibili stati iniziali non nulli di un registro e
+    sceglie quello la cui sequenza assomiglia di più al tratto di keystream noto"""
+    n = len(k_noto)
+    best_state = None
+    best_score = -1
+    for candidato in all_states(numero_bit):
+        seq = lfsr(candidato, taps, n)
+        corrispondenze = 0
+        for i in range(n):
+            if seq[i] == k_noto[i]:
+                corrispondenze += 1
+        if corrispondenze / n > best_score:
+            best_score = corrispondenze / n
+            best_state = candidato
+    return best_state, best_score
+
+def find_lfsr1(ks, f2, f3):
+
 
 # ATTACCO
 
@@ -124,7 +150,7 @@ def attack(c_hex, known_text):
 
     print()
     print(SEP)
-    print("KEYSTREAM NOTO = chiaro noto XOR cifrato (solo sui primi", n, "bit)")
+    print("KEYSTREAM NOTO = chiaro noto XOR cifrato (solo sui primi", num_bit_noti, "bit)")
     print(SEP)
     print("   chiaro noto:", bits_to_str(p_noto))
     print("   cifrato:    ", bits_to_str(c_noto[:num_bit_noti]))
@@ -132,12 +158,21 @@ def attack(c_hex, known_text):
 
     # 2) Recuperare i 3 semi iniziali dei registri (s1, s2, s3) tramite correlazione:
     #    Data la forte correlazione tra l'output di Geffe con z2 e z3 (75%)
-    #    si procede indovinando LFSR2 e LFSR3 e verificando se il risultato coincide con il keystream noto.
+    #    si procede indovinando LFSR2 e LFSR3 e verificando se il risultato coincide con il keystream noto,
+    #    provando 31 + 63 stati.
     print()
     print(SEP)
     print("2) RECUPERO DEI SEMI")
     print(SEP)
 
+    f2, score2 = find_initial_state(t2, 5, k_noto)
+    print(f"   LFSR2 = {f2} (coincidenza {score2:.0%})")
+
+    f3, score3 = find_initial_state(t3, 6, k_noto)
+    print(f"   LFSR3 = {f3} (coincidenza {score3:.0%})")
+
+    f1 = find_lfsr1(k_noto, f2, f3)
+    print(f"   LFSR1 = {f1}")
 
 
 # MENU
@@ -199,3 +234,6 @@ if scelta == "2":
     print(SEP)
     print("Testo decifrato:", decrypt(cifrato_hex, s1, s2, s3))
     print(SEP)
+
+
+if scelta == "3":
